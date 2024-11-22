@@ -1,0 +1,62 @@
+﻿<UserControl
+  x:Class="Setup.BA.Views.ProgressView"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+  xmlns:vm="clr-namespace:Setup.BA.ViewModels"
+  xmlns:view="clr-namespace:Setup.BA.Views"
+  mc:Ignorable="d" 
+  d:DesignWidth="300"
+  d:DataContext="{d:DesignInstance vm:ProgressViewModel}"
+  >
+
+  <UserControl.Style>
+    <Style TargetType="{x:Type view:ProgressView}">
+      <Style.Setters>
+        <Setter Property="LayoutTransform">
+          <Setter.Value>
+            <ScaleTransform ScaleY="0"/>
+          </Setter.Value>
+        </Setter>
+        <Setter Property="Visibility" Value="Collapsed" />
+      </Style.Setters>
+      <Style.Resources>
+        <Storyboard x:Key="OnProgressVisible">
+          <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="LayoutTransform.ScaleY">
+            <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1"/>
+          </DoubleAnimationUsingKeyFrames>
+          <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="{x:Null}">
+            <DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+          </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Key="OnProgressCollapse">
+          <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="LayoutTransform.ScaleY">
+            <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+          </DoubleAnimationUsingKeyFrames>
+          <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="{x:Null}">
+            <DiscreteObjectKeyFrame KeyTime="0:0:0.5" Value="{x:Static Visibility.Collapsed}"/>
+          </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+      </Style.Resources>
+      <Style.Triggers>
+        <Trigger Property="IsProgressVisible" Value="True">
+          <Trigger.EnterActions>
+            <BeginStoryboard Storyboard="{StaticResource OnProgressVisible}"/>
+          </Trigger.EnterActions>
+          <Trigger.ExitActions>
+            <BeginStoryboard Storyboard="{StaticResource OnProgressCollapse}"/>
+          </Trigger.ExitActions>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+  </UserControl.Style>
+
+  <DockPanel Margin="0,10,0,0">
+    <ProgressBar Orientation="Horizontal" Value="{Binding Progress}" Height="15" DockPanel.Dock="Top"/>
+    <DockPanel DockPanel.Dock="Bottom">
+      <TextBlock Text="{Binding Package}" DockPanel.Dock="Left"/>
+      <TextBlock Text="{Binding Message}" HorizontalAlignment="Right" DockPanel.Dock="Right"/>
+    </DockPanel>
+  </DockPanel>
+</UserControl>

@@ -1,0 +1,492 @@
+﻿<ResourceDictionary
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  xmlns:window="http://pondbat.com/2023/Common/"
+  xmlns:model="clr-namespace:FractalFlair.Models">
+
+  <!--
+  This resource dictionary extends the basic theme defined in GenericBase.xaml
+  with additional UI elements, like the menu system or custom controls like
+  BorderlessWindow, not needed by basic apps.
+  -->
+
+  <ResourceDictionary.MergedDictionaries>
+    <ResourceDictionary Source="/Themes/InstallerBlueTheme.xaml"/>
+  </ResourceDictionary.MergedDictionaries>
+
+  <Style TargetType="TextBlock" x:Key="XmlTextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+    <Setter Property="FontSize" Value="{StaticResource TextFontSizeLarge}"/>
+    <Setter Property="FontFamily" Value="Lucida Console"/>
+  </Style>
+  <Style TargetType="TextBox" x:Key="StatusTextBoxMonospaced" BasedOn="{StaticResource {x:Type TextBox}}">
+    <Setter Property="FontFamily" Value="Lucida Console"/>
+    <Setter Property="BorderThickness" Value="0"/>
+  </Style>
+  <Style TargetType="CheckBox" x:Key="XmlCheckBox"  BasedOn="{StaticResource {x:Type CheckBox}}">
+    <Setter Property="SnapsToDevicePixels" Value="true"/>
+    <Setter Property="OverridesDefaultStyle" Value="true"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <BulletDecorator Background="Transparent">
+            <BulletDecorator.Bullet>
+              <Grid x:Name="Border" Width="20">
+                <TextBlock x:Name="CheckMark" Text="-" Foreground="DarkRed" HorizontalAlignment="Right" VerticalAlignment="Center" Style="{DynamicResource XmlTextBlock}"/>
+              </Grid>
+            </BulletDecorator.Bullet>
+            <ContentPresenter Margin="5,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left" RecognizesAccessKey="True"/>
+          </BulletDecorator>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="false">
+              <Setter TargetName="CheckMark" Property="Text" Value="+"/>
+            </Trigger>
+            <Trigger Property="IsChecked" Value="{x:Null}">
+              <Setter TargetName="CheckMark" Property="Text" Value="+" />
+            </Trigger>
+            <Trigger Property="HasContent" Value="True">
+              <Setter Property="FocusVisualStyle">
+                <Setter.Value>
+                  <Style TargetType="Control">
+                    <Setter Property="Template">
+                      <Setter.Value>
+                        <ControlTemplate>
+                          <Rectangle Margin="14,0,0,0" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Stroke="{StaticResource FocusBorderBrush}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                        </ControlTemplate>
+                      </Setter.Value>
+                    </Setter>
+                  </Style>
+                </Setter.Value>
+              </Setter>
+              <Setter Property="Padding" Value="4,-1,0,0"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <Style TargetType="MenuItem" BasedOn="{StaticResource {x:Type FrameworkElement}}">
+    <Setter Property="FontFamily" Value="{StaticResource TextFont}"/>
+    <Setter Property="FontSize" Value="{StaticResource TextFontSizeSmall}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+    <Setter Property="Foreground" Value="{StaticResource ControlTextBrush}"/>
+    <Setter Property="Padding" Value="5,2,5,2"/>
+    <Setter Property="FocusVisualStyle" Value="{StaticResource InsideFocusVisualStyle}"/>
+    <Setter Property="IsChecked" Value="False"/>
+    <Setter Property="ItemTemplate">
+      <Setter.Value>
+        <DataTemplate>
+          <TextBlock Text="{Binding}" Foreground="{Binding Foreground, Mode=TwoWay, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=MenuItem}}"/>
+        </DataTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="MenuItem">
+          <Border x:Name="templateRoot" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+            <Grid VerticalAlignment="Center">
+              <ContentPresenter x:Name="ContentPanel" Grid.Column="0" ContentTemplate="{TemplateBinding HeaderTemplate}" Content="{TemplateBinding Header}" ContentStringFormat="{TemplateBinding HeaderStringFormat}" ContentSource="Header" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+              <Popup Grid.Column="0" x:Name="PART_Popup" AllowsTransparency="True" Focusable="False" IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}" PopupAnimation="{DynamicResource {x:Static SystemParameters.MenuPopupAnimationKey}}" Placement="Bottom">
+                <Border x:Name="SubMenuBorder" BorderBrush="{StaticResource NormalBorderBrush}" BorderThickness="{StaticResource BorderThickness}" Background="{StaticResource GgControlBackgroundBrush}" Padding="2">
+                  <ScrollViewer x:Name="SubMenuScrollViewer" Style="{DynamicResource {ComponentResourceKey ResourceId=MenuScrollViewer, TypeInTargetAssembly={x:Type FrameworkElement}}}">
+                    <Grid RenderOptions.ClearTypeHint="Enabled">
+                      <Canvas HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+                        <Rectangle x:Name="OpaqueRect" Fill="{Binding Background, ElementName=SubMenuBorder}" Height="{Binding ActualHeight, ElementName=SubMenuBorder}" Width="{Binding ActualWidth, ElementName=SubMenuBorder}"/>
+                      </Canvas>
+                      <Rectangle Fill="{TemplateBinding Background}" HorizontalAlignment="Left" Margin="29,2,0,2" Width="1"/>
+                      <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" Grid.IsSharedSizeScope="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" KeyboardNavigation.TabNavigation="Cycle"/>
+                    </Grid>
+                  </ScrollViewer>
+                </Border>
+              </Popup>
+            </Grid>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsSuspendingPopupAnimation" Value="True">
+              <Setter Property="PopupAnimation" TargetName="PART_Popup" Value="None"/>
+            </Trigger>
+            <Trigger Property="IsHighlighted" Value="True">
+              <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource HoverBrush}"/>
+              <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource HoverBorderBrush}"/>
+              <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Foreground" Value="{StaticResource DisabledForegroundBrush}"/>
+              <Setter Property="Background" Value="{StaticResource DisabledBackgroundBrush}"/>
+              <Setter Property="Opacity" TargetName="ContentPanel" Value="0.56"/>
+            </Trigger>
+            <Trigger Property="CanContentScroll" SourceName="SubMenuScrollViewer" Value="False">
+              <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=SubMenuScrollViewer}"/>
+              <Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=SubMenuScrollViewer}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+  </Style>
+  <Style TargetType="ContextMenu" BasedOn="{StaticResource {x:Type FrameworkElement}}">
+    <Setter Property="FontFamily" Value="{StaticResource TextFont}"/>
+    <Setter Property="FontSize" Value="{StaticResource TextFontSizeSmall}"/>
+    <Setter Property="Background" Value="{StaticResource GgControlBackgroundBrush}"/>
+    <Setter Property="BorderThickness" Value="{StaticResource BorderThickness}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+    <Setter Property="Foreground" Value="{StaticResource ControlTextBrush}"/>
+    <Setter Property="ItemsPanel">
+      <Setter.Value>
+        <ItemsPanelTemplate>
+          <StackPanel Orientation="Vertical"/>
+        </ItemsPanelTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ContextMenu">
+          <Border BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}">
+            <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+  </Style>
+  <Style TargetType="Menu" BasedOn="{StaticResource {x:Type FrameworkElement}}">
+    <Setter Property="FontFamily" Value="{StaticResource TextFont}"/>
+    <Setter Property="FontSize" Value="{StaticResource TextFontSizeSmall}"/>
+    <Setter Property="Background" Value="{StaticResource GgBackgroundBrush}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+    <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+    <Setter Property="FocusVisualStyle" Value="{StaticResource InsideFocusVisualStyle}"/>
+    <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+  </Style>
+
+  <Style TargetType="ComboBoxItem" BasedOn="{StaticResource {x:Type FrameworkElement}}">
+    <Setter Property="FontFamily" Value="{StaticResource TextFont}"/>
+    <Setter Property="FontSize" Value="{StaticResource TextFontSizeNormal}"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="Padding" Value="4,1"/>
+    <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+    <Setter Property="Background" Value="Transparent"/>
+    <Setter Property="Foreground" Value="{StaticResource ControlTextBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+    <Setter Property="BorderThickness" Value="0"/>
+    <Setter Property="FocusVisualStyle" Value="{StaticResource OutsideFocusVisual}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ComboBoxItem}">
+          <Border x:Name="Bd" TextElement.Foreground="{TemplateBinding Foreground}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Padding="{TemplateBinding Padding}" SnapsToDevicePixels="true">
+            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource DisabledControlTextBrush}"/>
+            </Trigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsSelected" Value="False"/>
+                <Condition Property="IsMouseOver" Value="True"/>
+                <Condition Property="IsKeyboardFocused" Value="False"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Background" TargetName="Bd" Value="{StaticResource HoverBrush}"/>
+              <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource HoverBorderBrush}"/>
+              <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource TextBrush}"/>
+            </MultiTrigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsSelected" Value="True"/>
+                <Condition Property="IsMouseOver" Value="False"/>
+                <Condition Property="IsKeyboardFocused" Value="True"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Background" TargetName="Bd" Value="{StaticResource GgExtraLightBrush}"/>
+              <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ShineBrush}"/>
+              <Setter Property="BorderThickness" TargetName="Bd" Value="{StaticResource HoverBorderThickness}"/>
+              <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource TextBrush}"/>
+            </MultiTrigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsSelected" Value="True"/>
+                <Condition Property="IsMouseOver" Value="True"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Background" TargetName="Bd" Value="{StaticResource HoverBrush}"/>
+              <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ShineBrush}"/>
+              <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource TextBrush}"/>
+            </MultiTrigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsSelected" Value="True"/>
+                <Condition Property="IsMouseOver" Value="False"/>
+                <Condition Property="IsKeyboardFocused" Value="False"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Background" TargetName="Bd" Value="{StaticResource GgExtraLightBrush}"/>
+              <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource GgExtraLightBrush}"/>
+              <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource TextBrush}"/>
+            </MultiTrigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsSelected" Value="False"/>
+                <Condition Property="IsMouseOver" Value="False"/>
+                <Condition Property="IsKeyboardFocused" Value="True"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Background" TargetName="Bd" Value="{StaticResource HoverBrush}"/>
+              <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ShineBrush}"/>
+              <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource TextBrush}"/>
+            </MultiTrigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsSelected" Value="False"/>
+                <Condition Property="IsMouseOver" Value="True"/>
+                <Condition Property="IsKeyboardFocused" Value="True"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="Background" TargetName="Bd" Value="{StaticResource HoverBrush}"/>
+              <Setter Property="BorderBrush" TargetName="Bd" Value="{StaticResource ShineBrush}"/>
+              <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{StaticResource TextBrush}"/>
+            </MultiTrigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+  </Style>
+  <Style TargetType="ComboBox" BasedOn="{StaticResource {x:Type FrameworkElement}}">
+    <Setter Property="FontFamily" Value="{StaticResource TextFont}"/>
+    <Setter Property="FontSize" Value="{StaticResource TextFontSizeNormal}"/>
+    <Setter Property="Background" Value="{StaticResource GgBackgroundBrush}"/>
+    <Setter Property="Foreground" Value="{StaticResource ControlTextBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource NormalBorderBrush}"/>
+    <Setter Property="BorderThickness" Value="{StaticResource BorderThickness}"/>
+    <Setter Property="HorizontalContentAlignment" Value="Left"/>
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource OutsideFocusVisual}"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ComboBox">
+          <Grid x:Name="templateRoot" SnapsToDevicePixels="True">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*"/>
+              <ColumnDefinition MinWidth="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}" Width="0"/>
+            </Grid.ColumnDefinitions>
+            <Popup x:Name="PART_Popup" AllowsTransparency="True" Grid.Column="0" Grid.ColumnSpan="2" IsOpen="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Stretch" Width="{Binding ActualWidth, ElementName=PART_EditableTextBox}" PopupAnimation="{DynamicResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" Placement="Bottom">
+              <Border x:Name="DropDownBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{StaticResource GgExtremeLightBrush}">
+                <ScrollViewer x:Name="DropDownScrollViewer">
+                  <Grid x:Name="grid" RenderOptions.ClearTypeHint="Enabled">
+                    <Canvas x:Name="canvas" HorizontalAlignment="Left" Height="0" VerticalAlignment="Top" Width="0">
+                      <Rectangle x:Name="OpaqueRect" Fill="Transparent" Height="{Binding ActualHeight, ElementName=DropDownBorder}" Width="{Binding ActualWidth, ElementName=DropDownBorder}"/>
+                    </Canvas>
+                    <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Contained" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                  </Grid>
+                </ScrollViewer>
+              </Border>
+            </Popup>
+            <ToggleButton Grid.Column="0" Grid.ColumnSpan="2" x:Name="toggleButton" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}" IsChecked="{Binding IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
+              <ToggleButton.Style>
+                <Style TargetType="ToggleButton">
+                  <Setter Property="OverridesDefaultStyle" Value="True"/>
+                  <Setter Property="IsTabStop" Value="False"/>
+                  <Setter Property="Focusable" Value="False"/>
+                  <Setter Property="ClickMode" Value="Press"/>
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate TargetType="ToggleButton">
+                        <Border x:Name="templateRoot" BorderBrush="{StaticResource NormalBorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="True" Background="{StaticResource GgControlBackgroundBrush}">
+                          <Border x:Name="splitBorder" BorderBrush="Transparent" BorderThickness="1" HorizontalAlignment="Right" Margin="0" SnapsToDevicePixels="True" Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}">
+                            <Path x:Name="Arrow" Data="F1M0,0L2.667,2.66665 5.3334,0 5.3334,-1.78168 2.6667,0.88501 0,-1.78168 0,0z" Fill="{TemplateBinding Foreground}" Stroke="{TemplateBinding Foreground}" StrokeThickness="0" HorizontalAlignment="Center" Margin="0" VerticalAlignment="Center"/>
+                          </Border>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                          <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                              <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="true"/>
+                              <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="false"/>
+                              <Condition Binding="{Binding IsPressed, RelativeSource={RelativeSource Self}}" Value="false"/>
+                              <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="true"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" TargetName="templateRoot" Value="White"/>
+                            <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource NormalBorderBrush}"/>
+                            <Setter Property="Background" TargetName="splitBorder" Value="Transparent"/>
+                            <Setter Property="BorderBrush" TargetName="splitBorder" Value="Transparent"/>
+                          </MultiDataTrigger>
+                          <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                              <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
+                              <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="false"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource HoverBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource HoverBorderBrush}"/>
+                          </MultiDataTrigger>
+                          <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                              <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="true"/>
+                              <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="true"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource GgBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource HoverBorderBrush}"/>
+                            <Setter Property="Background" TargetName="splitBorder" Value="{StaticResource GgControlBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource HoverBorderBrush}"/>
+                          </MultiDataTrigger>
+                          <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                              <Condition Binding="{Binding IsPressed, RelativeSource={RelativeSource Self}}" Value="true"/>
+                              <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="false"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource PressedBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource PressedBorderBrush}"/>
+                          </MultiDataTrigger>
+                          <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                              <Condition Binding="{Binding IsPressed, RelativeSource={RelativeSource Self}}" Value="true"/>
+                              <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="true"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource GgBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource PressedBorderBrush}"/>
+                            <Setter Property="Background" TargetName="splitBorder" Value="{StaticResource PressedBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="splitBorder" Value="{StaticResource PressedBorderBrush}"/>
+                          </MultiDataTrigger>
+                          <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Fill" TargetName="Arrow" Value="{StaticResource DisabledControlTextBrush}"/>
+                          </Trigger>
+                          <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                              <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false"/>
+                              <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="false"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource DisabledBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource DisabledBorderBrush}"/>
+                          </MultiDataTrigger>
+                          <MultiDataTrigger>
+                            <MultiDataTrigger.Conditions>
+                              <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="false"/>
+                              <Condition Binding="{Binding IsEditable, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="true"/>
+                            </MultiDataTrigger.Conditions>
+                            <Setter Property="Background" TargetName="templateRoot" Value="{StaticResource DisabledTextBoxBackgroundBrush}"/>
+                            <Setter Property="BorderBrush" TargetName="templateRoot" Value="{StaticResource DisabledBorderBrush}"/>
+                            <Setter Property="Background" TargetName="splitBorder" Value="Transparent"/>
+                            <Setter Property="BorderBrush" TargetName="splitBorder" Value="Transparent"/>
+                          </MultiDataTrigger>
+                        </ControlTemplate.Triggers>
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                </Style>
+              </ToggleButton.Style>
+            </ToggleButton>
+            <ContentPresenter Grid.Column="0" x:Name="ContentSite" TextElement.Foreground="{TemplateBinding Foreground}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}" Content="{TemplateBinding SelectionBoxItem}" ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}" HorizontalAlignment="Left" IsHitTestVisible="False" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" Grid.ZIndex="3"/>
+            <TextBox x:Name="PART_EditableTextBox" Focusable="True" Background="Transparent" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}" IsEnabled="{TemplateBinding IsEnabled}" Padding="{TemplateBinding Padding}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}" Grid.Column="0" Grid.ZIndex="4"/>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsEditable" Value="False">
+              <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Hidden"/>
+              <Setter TargetName="ContentSite" Property="Visibility" Value="Visible"/>
+            </Trigger>
+            <Trigger Property="IsEditable" Value="True">
+              <Setter TargetName="PART_EditableTextBox" Property="Visibility" Value="Visible"/>
+              <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
+            </Trigger>
+            <Trigger Property="HasItems" Value="False">
+              <Setter Property="Height" TargetName="DropDownBorder" Value="95"/>
+            </Trigger>
+            <MultiTrigger>
+              <MultiTrigger.Conditions>
+                <Condition Property="IsGrouping" Value="True"/>
+                <Condition Property="VirtualizingPanel.IsVirtualizingWhenGrouping" Value="False"/>
+              </MultiTrigger.Conditions>
+              <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
+            </MultiTrigger>
+            <Trigger Property="CanContentScroll" SourceName="DropDownScrollViewer" Value="False">
+              <Setter Property="Canvas.Top" TargetName="OpaqueRect" Value="{Binding VerticalOffset, ElementName=DropDownScrollViewer}"/>
+              <Setter Property="Canvas.Left" TargetName="OpaqueRect" Value="{Binding HorizontalOffset, ElementName=DropDownScrollViewer}"/>
+            </Trigger>
+            <MultiDataTrigger>
+              <MultiDataTrigger.Conditions>
+                <Condition Binding="{Binding IsEnabled, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="true"/>
+                <Condition Binding="{Binding IsMouseOver, RelativeSource={RelativeSource FindAncestor, AncestorLevel=1, AncestorType={x:Type ComboBox}}}" Value="true"/>
+              </MultiDataTrigger.Conditions>
+              <Setter Property="TextElement.Foreground" TargetName="ContentSite" Value="{StaticResource TextBoxBrush}"/>
+            </MultiDataTrigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="TextElement.Foreground" TargetName="ContentSite" Value="{StaticResource DisabledControlTextBrush}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Validation.ErrorTemplate" Value="{StaticResource ErrorBoxTemplate}"/>
+  </Style>
+
+  <Style TargetType="{x:Type window:BorderlessWindow}" BasedOn="{StaticResource {x:Type FrameworkElement}}">
+    <Setter Property="Background" Value="{StaticResource WindowBackgroundBrush}"/>
+    <Setter Property="BorderBrush" Value="{StaticResource GgDarkBrush}"/>
+    <Setter Property="TitleBackground" Value="{StaticResource WindowTitleBarBrush}"/>
+    <Setter Property="TitleForeground" Value="{StaticResource TextBrush}"/>
+    <Setter Property="WindowState" Value="Normal"/>
+    <Setter Property="WindowStyle" Value="None"/>
+    <Setter Property="AllowsTransparency" Value="True"/>
+    <Setter Property="ResizeMode" Value="CanResizeWithGrip"/>
+    <Setter Property="BorderThickness" Value="{StaticResource BorderThickness}"/>
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type window:BorderlessWindow}">
+          <Grid>
+            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+              <DockPanel>
+                <DockPanel x:Name="Titlebar" DockPanel.Dock="Top" Background="{TemplateBinding TitleBackground}" DockPanel.ZIndex="2">
+                  <Button x:Name="PART_CloseButton" Style="{StaticResource WindowTitleBarCloseButton}" DockPanel.Dock="Right" Focusable="True" DockPanel.ZIndex="6">
+                    <TextBlock FontFamily="Webdings">r</TextBlock>
+                  </Button>
+                  <Button x:Name="PART_MaximizeButton" Style="{StaticResource WindowTitleBarButton}" DockPanel.Dock="Right" Focusable="True" DockPanel.ZIndex="5">
+                    <TextBlock FontFamily="Webdings">1</TextBlock>
+                  </Button>
+                  <Button x:Name="PART_MinimizeButton" Style="{StaticResource WindowTitleBarButton}" DockPanel.Dock="Right" Focusable="True" DockPanel.ZIndex="4">
+                    <TextBlock FontFamily="Webdings">0</TextBlock>
+                  </Button>
+                  <StatusBar x:Name="PART_TitlebarDragArea" Background="Transparent" DockPanel.ZIndex="3">
+                    <Image Source="{Binding Icon, RelativeSource={RelativeSource TemplatedParent}}" Height="20" Stretch="Uniform" VerticalAlignment="Center" Margin="5,0,0,5" Focusable="False" />
+                    <TextBlock Text="{TemplateBinding Title}" FontSize="{StaticResource TextFontSizeSmall}" Foreground="{TemplateBinding TitleForeground}" Margin="0" VerticalAlignment="Center"/>
+                    <ContentPresenter Content="{Binding TitleContent, RelativeSource={RelativeSource TemplatedParent}}" />
+                  </StatusBar>
+                </DockPanel>
+                <Grid DockPanel.Dock="Bottom" DockPanel.ZIndex="1">
+                  <AdornerDecorator>
+                    <ContentPresenter />
+                  </AdornerDecorator>
+                  <ResizeGrip x:Name="WindowResizeGrip" HorizontalAlignment="Right" VerticalAlignment="Bottom" Visibility="Visible" IsTabStop="false" />
+                </Grid>
+              </DockPanel>
+            </Border>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="WindowState" Value="Maximized">
+              <Setter TargetName="PART_MaximizeButton" Property="Content">
+                <Setter.Value>
+                  <TextBlock FontFamily="Webdings">2</TextBlock>
+                </Setter.Value>
+              </Setter>
+            </Trigger>
+            <Trigger Property="WindowState" Value="Minimized">
+              <Setter TargetName="PART_MaximizeButton" Property="Content">
+                <Setter.Value>
+                  <TextBlock FontFamily="Webdings">1</TextBlock>
+                </Setter.Value>
+              </Setter>
+            </Trigger>
+            <Trigger Property="WindowState" Value="Normal">
+              <Setter TargetName="PART_MaximizeButton" Property="Content">
+                <Setter.Value>
+                  <TextBlock FontFamily="Webdings">1</TextBlock>
+                </Setter.Value>
+              </Setter>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+    <Setter Property="Validation.ErrorTemplate" Value="{x:Null}"/>
+  </Style>
+
+  <DataTemplate DataType="{x:Type model:ColorMap}" >
+    <TextBlock Text="{Binding Name}"/>
+  </DataTemplate></ResourceDictionary>

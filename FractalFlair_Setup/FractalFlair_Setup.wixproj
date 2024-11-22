@@ -1,0 +1,25 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.0">
+  
+  <PropertyGroup>
+    <OutputType>Bundle</OutputType>
+    <Platforms>x64</Platforms>
+    <InstallerPlatform>x64</InstallerPlatform>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <SuppressPdbOutput>True</SuppressPdbOutput>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Content Include="FractalFlair_2.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="WixToolset.Bal.wixext" Version="5.*" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="5.*" />
+  </ItemGroup>
+  
+</Project>

@@ -1,0 +1,27 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="CG.Shortcut">
+      <ComponentRef Id="C.Shortcut"/>
+    </ComponentGroup>
+
+    <DirectoryRef Id="SHORTCUTFOLDER">
+      <Component Id="C.Shortcut" Guid="{47ACF856-20A9-42DB-A0AE-D91EA3D90764}">
+        <Shortcut
+          Id               = "SC.Shortcut"
+          Name             = "!(bind.Property.ProductName)"
+          Description      = "!(bind.Property.ProductName)"
+          Target           = "[#F.FractalFlair.exe]"
+          WorkingDirectory = "INSTALLLOCATION"/>
+        <RegistryValue
+          Id      = "Registry.Shortcut"
+          Root    = "HKCU"
+          Key     = "Software\!(bind.Property.Manufacturer)\!(bind.Property.ProductName)"
+          Name    = "installed"
+          Type    = "integer"
+          Value   = "1"
+          KeyPath = "yes"/>
+        <RemoveFolder Id="SHORTCUTFOLDER" On="uninstall"/>
+      </Component>
+    </DirectoryRef>
+  </Fragment>
+</Wix>

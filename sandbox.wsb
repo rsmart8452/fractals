@@ -1,0 +1,16 @@
+<Configuration>
+  
+  <MemoryInMB>8000</MemoryInMB>
+  
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>.</HostFolder>
+      <SandboxFolder>c:\Fractal_Source</SandboxFolder>
+    </MappedFolder>
+  </MappedFolders>
+  
+  <LogonCommand>
+    <Command>c:\Fractal_Source\boot.cmd</Command>
+  </LogonCommand>
+  
+</Configuration>

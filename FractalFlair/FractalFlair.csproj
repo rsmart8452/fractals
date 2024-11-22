@@ -1,0 +1,43 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net8.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<UseWPF>true</UseWPF>
+		<ProduceReferenceAssembly>False</ProduceReferenceAssembly>
+		<ApplicationIcon>FractalFlair_2.ico</ApplicationIcon>
+		<Platforms>AnyCPU</Platforms>
+		<Title>$(AssemblyName)</Title>
+		<Authors>Richard Martin</Authors>
+		<Description>$(AssemblyName)</Description>
+		<Copyright>Copyright 2024, $(Company)</Copyright>
+		<FileVersion>1.0.0.0410</FileVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<DebugType>none</DebugType>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Resource Include="FractalFlair_2.ico">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<Resource Include="FractalFlair.ico">
+			<CopyToOutputDirectory>Never</CopyToOutputDirectory>
+		</Resource>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="AnimatedGif" Version="1.0.5" />
+		<PackageReference Include="Common.WPF" Version="2.2.2" />
+		<PackageReference Include="Singulink.Numerics.BigDecimal" Version="3.2.0" />
+		<PackageReference Include="System.Drawing.Common" Version="8.0.3" />
+		<PackageReference Include="WpfAnimatedGif" Version="2.0.2" />
+		<PackageReference Include="WriteableBitmapEx" Version="1.6.8" />
+	</ItemGroup>
+
+</Project>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+  <Fragment>
+    <ComponentGroup Id="FilesToDeploy" Directory="INSTALLLOCATION" Source="..\FractalFlair\bin\publish">
+      <Files Include="**">
+        <Exclude Files="FractalFlair.exe" />
+      </Files>
+
+      <Component>
+        <File Id="F.FractalFlair.exe" Name="FractalFlair.exe" />
+      </Component>
+    </ComponentGroup>
+  </Fragment>
+</Wix>

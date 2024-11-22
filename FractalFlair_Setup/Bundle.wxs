@@ -1,0 +1,46 @@
+﻿<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:bal="http://wixtoolset.org/schemas/v4/wxs/bal" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+
+  <!-- Upgrade code MUST stay the same: {a8e479da-896b-4a94-b1cb-cc9e991d4fae} !!! -->
+  <?define UpgradeCode="{a8e479da-896b-4a94-b1cb-cc9e991d4fae}" ?>
+  <?define ProductVersion=!(bind.packageVersion.Fractal.MSI) ?>
+  <?define ProductName="FractalFlair" ?>
+  <?define Manufacturer="Richard Martin" ?>
+  <?define MsiUpgradeCode="{442275a6-a5cc-4ff8-a7a7-dc0a84845e2b}"?>
+
+  <Bundle
+    Name           = "$(var.ProductName) v$(var.ProductVersion)"
+    Version        = "$(var.ProductVersion)"
+    Manufacturer   = "$(var.Manufacturer)"
+    UpgradeCode    = "$(var.UpgradeCode)"
+    Copyright      = "© 2024, $(var.Manufacturer)"
+    DisableModify  = "yes"
+    IconSourceFile = "FractalFlair_2.ico"
+    >
+
+    <BootstrapperApplication SourceFile="..\Setup.BA\bin\x64\$(var.Configuration)\net462\win-x64\Setup.BA.exe" bal:CommandLineVariables="caseInsensitive">
+      <Payload SourceFile="..\Setup.BA\bin\x64\$(var.Configuration)\net462\win-x64\mbanative.dll"/>
+      <Payload SourceFile="..\Setup.BA\bin\x64\$(var.Configuration)\net462\win-x64\WixToolset.BootstrapperApplicationApi.dll"/>
+      <Payload SourceFile="..\Setup.BA\bin\x64\$(var.Configuration)\net462\win-x64\Setup.BA.exe.config"/>
+    </BootstrapperApplication>
+
+    <!--
+    These variables are used by the BootstrapperApp
+    Saves the state of Setup.MSI: advertised (1), absent (2), or locally installed (5).
+    -->
+    <Variable Name="INSTALLSTATE" Type="numeric" Value="0" />
+    <util:ProductSearch Id="IsInstalled" Variable="INSTALLSTATE" UpgradeCode="$(var.MsiUpgradeCode)" Result="state"/>
+
+    <Chain>
+      <MsiPackage
+        Id                = "Fractal.MSI"
+        SourceFile        = "..\Setup.MSI\bin\x64\$(var.Configuration)\FractalFlairInstall.msi"
+        Visible           = "no"
+        Compressed        = "yes"
+        DisplayName       = "FractalFlair"
+        Description       = "Fractal image generator"
+        Vital             = "yes"
+        bal:PrereqPackage = "yes" />
+    </Chain>
+
+  </Bundle>
+</Wix>

@@ -1,0 +1,39 @@
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <!-- Upgrade code MUST stay the same: {442275a6-a5cc-4ff8-a7a7-dc0a84845e2b} !!! -->
+  <?define UpgradeCode="{442275a6-a5cc-4ff8-a7a7-dc0a84845e2b}" ?>
+  <?define ProductVersion=!(bind.FileVersion.F.FractalFlair.exe) ?>
+  <?define Name="FractalFlair" ?>
+  <?define Manufacturer="Richard Martin" ?>
+
+  <Package
+    UpgradeCode      = "$(var.UpgradeCode)"
+    Name             = "$(var.Name)"
+    Version          = "$(var.ProductVersion)"
+    Manufacturer     = "$(var.Manufacturer)"
+    Language         = "1033"
+    Scope            = "perMachine"
+    >
+
+    <!-- Major Upgrade Rule to disallow downgrades -->
+    <MajorUpgrade DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+    <MediaTemplate CompressionLevel="high" EmbedCab="true" CabinetTemplate="$(var.Name){0}.cab"/>
+    <Icon Id="FractalFlair_2.ico" SourceFile="Resources\FractalFlair_2.ico"/>
+    <Property Id="ARPPRODUCTICON" Value="FractalFlair_2.ico"/>
+    <Property Id="DISABLEADVTSHORTCUTS" Value="1"/>
+
+    <StandardDirectory Id="StartMenuFolder">
+      <Directory Id="SHORTCUTFOLDER" Name="!(bind.Property.ProductName)"/>
+    </StandardDirectory>
+
+    <StandardDirectory Id="ProgramFiles64Folder">
+      <Directory Id="INSTALLLOCATION" Name="!(bind.Property.ProductName)"/>
+    </StandardDirectory>
+    
+    <Feature Id="FractalFlairInstall" Title="$(var.Name)" Description="Installs all the files needed for $(var.Name)" Level="1" AllowAdvertise="no" ConfigurableDirectory="INSTALLLOCATION">
+      <ComponentGroupRef Id="FilesToDeploy"/>
+      <ComponentGroupRef Id="CG.Shortcut" />
+    </Feature>
+  
+  </Package>
+</Wix>

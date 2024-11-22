@@ -1,0 +1,40 @@
+﻿<Project Sdk="WixToolset.Sdk/5.0.0">
+  
+  <PropertyGroup>
+    <Platforms>x64</Platforms>
+    <Authors>Richard Martin</Authors>
+    <Description>FractalFlair</Description>
+    <Copyright>© 2024, Richard Martin</Copyright>
+    <OutputName>FractalFlairInstall</OutputName>
+    <OutputType>Package</OutputType>
+    <PublishDir>bin\Publish</PublishDir>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <SuppressPdbOutput>True</SuppressPdbOutput>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <Content Include="Resources\Banner.jpg" />
+    <Content Include="Resources\Dialog.jpg" />
+    <Content Include="Resources\FractalFlair_2.ico">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\Icon.ico" />
+    <Content Include="Resources\EULA.rtf" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="WixToolset.NetFx.wixext" Version="5.0.0" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="5.0.0" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Setup.BA\Setup.BA.csproj" />
+  </ItemGroup>
+  
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="dotnet publish &quot;..\FractalFlair\FractalFlair.csproj&quot; -o &quot;..\FractalFlair\bin\publish&quot; -r win-x64 -c $(Configuration) --self-contained true" />
+  </Target>
+  
+</Project>
